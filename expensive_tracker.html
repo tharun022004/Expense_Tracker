@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f0f0f0;
+    }
+
+    .container {
+      text-align: center;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      max-width: 80%; /* Adjust maximum width as needed */
+      width: 100%;
+      box-sizing: border-box;
+      resize: both; /* Allow resizing */
+      overflow: auto;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      color: #555;
+    }
+
+    input {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .expenses-box {
+      text-align: left;
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      max-height: calc(50vh - 150px); /* Adjust maximum height as needed */
+      overflow-y: auto;
+    }
+
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .expense-item:last-child {
+      border-bottom: none;
+    }
+
+    .expense-item span {
+      flex: 1;
+    }
+
+    .delete-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: background-color 0.3s ease;
+    }
+
+    .delete-btn:hover {
+      background-color: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Expense Tracker</h2>
+    <div id="resizeable-container">
+      <form id="expense-form">
+        <label for="description">Description:</label>
+        <input type="text" id="description" required>
+        
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" required>
+        
+        <button type="button" onclick="addExpense()">Add Expense</button>
+      </form>
+
+      <div class="expenses-box">
+        <h3>Added Expenses</h3>
+        <ul id="expenses-list" class="expenses-list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Retrieve expenses from local storage
+    const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+    // Function to render expenses
+    function renderExpenses() {
+      const expensesList = document.getElementById('expenses-list');
+      expensesList.innerHTML = '';
+
+      expenses.forEach((expense, index) => {
+        const li = document.createElement('li');
+        li.classList.add('expense-item');
+        li.innerHTML = `
+          <span>${index + 1}.</span>
+          <span>${expense.description}</span>
+          <span>₹${expense.amount}</span>
+          <button class="delete-btn" onclick="deleteExpense(${index})">Delete</button>
+        `;
+        expensesList.appendChild(li);
+      });
+    }
+
+    // Function to add expense
+    function addExpense() {
+      const description = document.getElementById('description').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+
+      if (description && !isNaN(amount)) {
+        const newExpense = { description, amount };
+        expenses.push(newExpense);
+        saveExpensesToLocalStorage();
+        renderExpenses();
+        clearForm();
+      } else {
+        alert('Please enter valid description and amount.');
+      }
+    }
+
+    // Function to delete expense
+    function deleteExpense(index) {
+      expenses.splice(index, 1);
+      saveExpensesToLocalStorage();
+      renderExpenses();
+    }
+
+    // Function to save expenses to local storage
+    function saveExpensesToLocalStorage() {
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+    }
+
+    // Function to clear form fields
+    function clearForm() {
+      document.getElementById('description').value = '';
+      document.getElementById('amount').value = '';
+    }
+
+    // Initial rendering
+    renderExpenses();
+  </script>
+</body>
+</html>
